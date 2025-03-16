@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Cambio Implícito</title>
+    <script>
+        function calcular() {
+            let dolares = parseFloat(document.getElementById('dolares').value) || 0;
+            let reales = parseFloat(document.getElementById('reales').value) || 0;
+            let pesosPorReal = parseFloat(document.getElementById('pesos').value) || 0;
+
+            if (dolares > 0 && reales > 0 && pesosPorReal > 0) {
+                let dolarImplicito = (pesosPorReal * reales) / dolares;
+                let resultado = `Dólar implícito: ${dolarImplicito.toFixed(2)} ARS/USD`;
+                resultado += dolarImplicito < pesosPorReal * reales / 5.7 
+                    ? '<br><span style="color:green;">Conviene comprar dólares primero</span>' 
+                    : '<br><span style="color:red;">Conviene comprar reales directamente</span>';
+                document.getElementById('resultado').innerHTML = resultado;
+            } else {
+                document.getElementById('resultado').innerHTML = 'Ingresa valores válidos en todos los campos';
+            }
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-6 bg-gray-100">
+    <div class="max-w-lg mx-auto bg-white p-6 shadow-md rounded-lg relative">
+        <h2 class="text-xl font-bold mb-4">Calculadora de Tipo de Cambio Implícito</h2>
+        <label class="block mb-2">Dólares:</label>
+        <input id="dolares" type="number" class="w-full p-2 border rounded mb-4" oninput="calcular()">
+        
+        <label class="block mb-2">Reales que obtienes con esos dólares:</label>
+        <input id="reales" type="number" class="w-full p-2 border rounded mb-4" oninput="calcular()">
+        
+        <label class="block mb-2">Pesos por cada real:</label>
+        <input id="pesos" type="number" class="w-full p-2 border rounded mb-4" oninput="calcular()">
+        
+        <div id="resultado" class="mt-4 text-lg font-semibold"></div>
+        <span class="absolute bottom-2 right-2 text-xs text-gray-400">para abril</span>
+    </div>
+</body>
+</html>
