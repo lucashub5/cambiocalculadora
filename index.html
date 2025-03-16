@@ -33,10 +33,34 @@
 
             if (dolares > 0 && reales > 0 && pesosPorReal > 0 && dolarActual > 0) {
                 let dolarImplicito = (pesosPorReal * reales) / dolares;
-                let resultado = `Dólar implícito: ${dolarImplicito.toFixed(2)} ARS/USD`;
-                resultado += dolarActual < dolarImplicito
-                    ? '<br><span style="color:green;">Conviene comprar dólares primero</span>'
-                    : '<br><span style="color:red;">Conviene comprar reales directamente</span>';
+                let ahorroImplicito = dolarImplicito - dolarActual;
+                let ahorroPorcentual = (ahorroImplicito / dolarActual) * 100;
+                let ahorroTotal = ahorroImplicito * dolares; // Ahorro total por la cantidad de dólares
+
+                // Formato de los resultados
+                let resultado = `<div class="text-lg font-bold">Dólar implícito: ${dolarImplicito.toFixed(2)} ARS/USD</div>`;
+
+                // Condición para mostrar si conviene comprar dólares primero o reales directamente
+                if (dolarActual < dolarImplicito) {
+                    // Si conviene comprar dólares primero
+                    resultado += `<div style="color:green;">Conviene comprar dólares primero</div>`;
+
+                    // Ahorro implícito y porcentual en este caso
+                    resultado += `<div class="text-sm text-gray-600">Ahorro implícito: ${ahorroImplicito.toFixed(2)} ARS/USD (${ahorroPorcentual.toFixed(2)}%)</div>`;
+
+                    // Ahorro total
+                    resultado += `<div class="text-sm text-gray-600">Ahorro total: ${ahorroTotal.toFixed(2)} ARS</div>`;
+                } else {
+                    // Si conviene comprar reales directamente
+                    resultado += `<div style="color:red;">Conviene comprar reales directamente</div>`;
+
+                    // Ahorro implícito y porcentual en este caso (al revés, ya que no es favorable cambiar a dólares)
+                    let ahorroTotalReales = ahorroImplicito * dolares; // Ahorro total si se compran reales directamente
+                    resultado += `<div class="text-sm text-gray-600">Ahorro implícito: ${Math.abs(ahorroImplicito).toFixed(2)} ARS/USD (${Math.abs(ahorroPorcentual).toFixed(2)}%)</div>`;
+                    resultado += `<div class="text-sm text-gray-600">Ahorro total: ${Math.abs(ahorroTotalReales).toFixed(2)} ARS</div>`;
+                }
+
+                // Mostrar el resultado
                 document.getElementById('resultado').innerHTML = resultado;
             } else {
                 document.getElementById('resultado').innerHTML = 'Ingresa valores válidos en todos los campos';
@@ -67,7 +91,7 @@
     <div class="max-w-lg mx-auto bg-white p-6 shadow-md rounded-lg relative">
         <h2 class="text-xl font-bold mb-4">Calculadora de Tipo de Cambio Implícito</h2>
         
-        <label class="block mb-2">Dólares:</label>
+        <label class="block mb-2">Dólares a cambiar:</label>
         <input id="dolares" type="number" class="w-full p-2 border rounded mb-4" oninput="calcular()">
         
         <label class="block mb-2">Reales que obtienes con esos dólares:</label>
