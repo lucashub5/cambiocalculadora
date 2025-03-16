@@ -9,12 +9,13 @@
             let dolares = parseFloat(document.getElementById('dolares').value) || 0;
             let reales = parseFloat(document.getElementById('reales').value) || 0;
             let pesosPorReal = parseFloat(document.getElementById('pesos').value) || 0;
+            let dolarActual = parseFloat(document.getElementById('dolarActual').value) || 0;
 
-            if (dolares > 0 && reales > 0 && pesosPorReal > 0) {
+            if (dolares > 0 && reales > 0 && pesosPorReal > 0 && dolarActual > 0) {
                 let dolarImplicito = (pesosPorReal * reales) / dolares;
                 let resultado = `Dólar implícito: ${dolarImplicito.toFixed(2)} ARS/USD`;
-                resultado += dolarImplicito < pesosPorReal * reales / 5.7 
-                    ? '<br><span style="color:green;">Conviene comprar dólares primero</span>' 
+                resultado += dolarActual < dolarImplicito
+                    ? '<br><span style="color:green;">Conviene comprar dólares primero</span>'
                     : '<br><span style="color:red;">Conviene comprar reales directamente</span>';
                 document.getElementById('resultado').innerHTML = resultado;
             } else {
@@ -35,6 +36,9 @@
         
         <label class="block mb-2">Pesos por cada real:</label>
         <input id="pesos" type="number" class="w-full p-2 border rounded mb-4" oninput="calcular()">
+        
+        <label class="block mb-2">Dólar actual en ARS:</label>
+        <input id="dolarActual" type="number" class="w-full p-2 border rounded mb-4" oninput="calcular()">
         
         <div id="resultado" class="mt-4 text-lg font-semibold"></div>
         <span class="absolute bottom-2 right-2 text-xs text-gray-400">para abril</span>
