@@ -5,11 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora Cambio Implícito</title>
     <script>
-        function calcular() {
+        // Función para obtener el valor del dólar actual desde la API
+        async function obtenerDolarActual() {
+            try {
+                const respuesta = await fetch('https://dolarapi.com/v1/dolares/bolsa');
+                const data = await respuesta.json();
+                return data.compra; // Retorna el valor de compra
+            } catch (error) {
+                console.error("Error al obtener el valor del dólar:", error);
+                return 0;
+            }
+        }
+
+        // Función principal de cálculo
+        async function calcular() {
             let dolares = parseFloat(document.getElementById('dolares').value) || 0;
             let reales = parseFloat(document.getElementById('reales').value) || 0;
             let pesosPorReal = parseFloat(document.getElementById('pesos').value) || 0;
-            let dolarActual = parseFloat(document.getElementById('dolarActual').value) || 0;
+
+            // Obtener cotización automática si el checkbox está marcado
+            let dolarActual = 0;
+            if (document.getElementById('cotizacionAutomatica').checked) {
+                dolarActual = await obtenerDolarActual();
+            } else {
+                dolarActual = parseFloat(document.getElementById('dolarActual').value) || 0;
+            }
 
             if (dolares > 0 && reales > 0 && pesosPorReal > 0 && dolarActual > 0) {
                 let dolarImplicito = (pesosPorReal * reales) / dolares;
@@ -22,12 +42,31 @@
                 document.getElementById('resultado').innerHTML = 'Ingresa valores válidos en todos los campos';
             }
         }
+
+        // Función para habilitar/deshabilitar el campo de cotización manual según el estado del checkbox
+        async function toggleCotizacionManual() {
+            const cotizacionInput = document.getElementById('dolarActual');
+            const cotizacionAutomatica = document.getElementById('cotizacionAutomatica');
+
+            if (cotizacionAutomatica.checked) {
+                // Si la cotización automática está activada, se obtiene el valor de la API y se coloca en el placeholder
+                const dolarActual = await obtenerDolarActual();
+                cotizacionInput.placeholder = `Cotización automática: ${dolarActual.toFixed(2)} ARS/USD`;
+                cotizacionInput.disabled = true;
+                cotizacionInput.value = ''; // Resetea el valor si se desmarca
+            } else {
+                // Si no está activada, el campo puede ser editado y no hay placeholder
+                cotizacionInput.disabled = false;
+                cotizacionInput.placeholder = '';
+            }
+        }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="p-6 bg-gray-100">
     <div class="max-w-lg mx-auto bg-white p-6 shadow-md rounded-lg relative">
         <h2 class="text-xl font-bold mb-4">Calculadora de Tipo de Cambio Implícito</h2>
+        
         <label class="block mb-2">Dólares:</label>
         <input id="dolares" type="number" class="w-full p-2 border rounded mb-4" oninput="calcular()">
         
@@ -37,11 +76,23 @@
         <label class="block mb-2">Pesos por cada real:</label>
         <input id="pesos" type="number" class="w-full p-2 border rounded mb-4" oninput="calcular()">
         
+        <!-- Checkbox para activar/desactivar cotización automática -->
+        <div class="mb-4 flex items-center">
+            <input type="checkbox" id="cotizacionAutomatica" class="mr-2" checked onchange="toggleCotizacionManual()">
+            <label for="cotizacionAutomatica" class="text-sm">Cotización automática</label>
+        </div>
+
+        <!-- Campo para la cotización manual (solo habilitado si no está marcado el checkbox) -->
         <label class="block mb-2">Dólar actual en ARS:</label>
-        <input id="dolarActual" type="number" class="w-full p-2 border rounded mb-4" oninput="calcular()">
-        
+        <input id="dolarActual" type="number" class="w-full p-2 border rounded mb-4" oninput="calcular()" disabled placeholder="">
+
         <div id="resultado" class="mt-4 text-lg font-semibold"></div>
         <span class="absolute bottom-2 right-2 text-xs text-gray-400">para abril</span>
     </div>
+
+    <script>
+        // Inicializa el estado del campo de cotización manual según el checkbox
+        toggleCotizacionManual();
+    </script>
 </body>
 </html>
